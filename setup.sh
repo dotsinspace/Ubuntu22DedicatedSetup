@@ -1,12 +1,26 @@
 #!/bin/bash
 
-# Set up log file
+# Exit on any error
+set -e
+
+#
+# GLOBALS
+#
 LOG_FILE="/var/log/system_update.log"
 
-# Function to log messages
+
+#
+# LOG
+# Method for helper debbuging.
 log_message() {
   echo "$(date +'%Y-%m-%d %H:%M:%S') - $1" | tee -a "$LOG_FILE"
 }
+
+
+#
+# SYSTEM UPGRADE
+# Following section upgrade the system and its pacakges.
+
 
 # Style guide.
 log_message "Starting system update process..."
@@ -79,3 +93,55 @@ fi
 
 # Style guide.
 log_message "System update process completed."
+
+
+# Check if the script is run as root
+if [ "$(id -u)" -ne 0 ]; then
+  log_message "This script must be run as root!"
+  exit 1
+fi
+
+# Check if both username and password are provided as arguments
+if [ -z "$1" ] || [ -z "$2" ]; then
+  log_message "Usage: $0 <username> <password>"
+  exit 1
+fi
+
+
+#
+# USER SETUP
+# Following section contains all the setting to setup a dynamic user.
+
+
+# Variable assignment.
+USER_NAME="$1"
+PASSWORD="$2"
+
+# Style guide.
+log_message "Creating user '$USER_NAME'..."
+
+# Create the user with a home directory and bash shell
+useradd -m -s /bin/bash "$USER_NAME"
+
+# Style guide.
+log_message "$USER_NAME:$PASSWORD" | chpasswd
+log_message "Adding '$USER_NAME' to the sudo group..."
+
+# Add user to group.
+usermod -aG sudo "$USER_NAME"
+
+# Style guide.
+log_message "Configuring passwordless sudo for '$USER_NAME'..."
+log_message "$USER_NAME ALL=(ALL) NOPASSWD: ALL" | tee -a /etc/sudoers > /dev/null
+log_message "Enabling SSH access for '$USER_NAME'..."
+
+# Modify the SSH config to allow password authentication
+sed -i '/^PasswordAuthentication /c\PasswordAuthentication yes' /etc/ssh/sshd_config
+
+# Restart the SSH service to apply changes
+systemctl restart sshd
+
+# Echo for successful setup.
+log_message "User '$USER_NAME' created successfully with a password and passwordless sudo access."
+log_message "You can now test with: sudo -u $USER_NAME sudo command"
+
