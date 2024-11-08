@@ -143,5 +143,4 @@ systemctl restart sshd
 
 # Echo for successful setup.
 log_message "User '$USER_NAME' created successfully with a password and passwordless sudo access."
-log_message "You can now test with: sudo -u $USER_NAME sudo command"
 
