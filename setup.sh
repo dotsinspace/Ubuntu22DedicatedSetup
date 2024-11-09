@@ -28,7 +28,7 @@ log_message "Starting system update process..."
 log_message "Updating package lists..."
 
 # Update packages.
-if echo $PASSWORD | sudo -S apt-get update 2>&1; then
+if echo "$PASSWORD" | sudo -S apt-get update 2>&1; then
   # Style guide.
   log_message "Package lists updated successfully."
 else
