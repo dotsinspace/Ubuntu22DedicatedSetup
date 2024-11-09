@@ -126,3 +126,50 @@ log_message "Node Exporter setup completed!"
 
 # Verify the service status
 sudo systemctl status node_exporter --no-pager
+
+
+#
+# DOCKER INSTALLATION
+#
+
+# Style guide.
+log_message "Checking if Docker is already installed..."
+
+if command -v docker &> /dev/null; then
+  # Style guide.
+  log_message "Docker is already installed. Skipping installation."
+else
+  # Style guide.
+  log_message "Docker is not installed. Proceeding with installation..."
+
+  # Install prerequisites
+  apt-get update -y
+  apt-get install -y ca-certificates curl gnupg lsb-release
+
+  # Add Docker's official GPG key
+  mkdir -p /etc/apt/keyrings
+  curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo tee /etc/apt/keyrings/docker.gpg > /dev/null
+
+  # Set up the Docker repository
+  echo \
+    "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.gpg] https://download.docker.com/linux/ubuntu \
+    $(lsb_release -cs) stable" | sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
+
+  # Install Docker Engine
+  apt-get update -y
+  apt-get install -y docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
+
+  # Style guide.
+  log_message "Docker installation completed!"
+fi
+
+# Style guide.
+log_message "Starting Docker service..."
+
+# Start and enable Docker service
+sudo systemctl enable docker
+sudo systemctl restart docker
+sudo systemctl status docker --no-pager
+
+# Style guide.
+log_message "Docker setup completed!"
