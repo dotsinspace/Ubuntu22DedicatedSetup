@@ -37,3 +37,24 @@ log_message "Updating package lists..."
 
 # Update & Upgrade system.
 apt-get update -y && apt-get upgrade
+
+
+#
+# USER CREATION
+# This section creates the new user, sets password, and adds the user to the sudo group.
+
+# Style guide.
+log_message "Creating user '$USER_NAME' with home directory..."
+
+# Create user with home directory
+useradd -m -s /bin/bash "$USER_NAME"
+
+# Set the user's password
+echo "$USER_NAME:$PASSWORD" | chpasswd
+
+# Add the user to the sudo group
+usermod -aG sudo "$USER_NAME"
+
+# Style guide.
+log_message "User '$USER_NAME' created and added to the sudo group."
+log_message "User created successfully."
