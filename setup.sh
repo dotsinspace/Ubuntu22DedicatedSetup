@@ -20,15 +20,17 @@ fi
 # SYSTEM UPGRADE
 # Following section upgrades the system and its packages.
 
+# Style guide.
 log_message "Starting system update process..."
 log_message "Updating package lists..."
 
 # Update & Upgrade system.
-apt-get update -y && apt-get upgrade
+apt-get update -y && apt-get upgrade -y
+
 
 #
 # PROMETHEUS
-# Node expoter for exposing system information over end point.
+# System monitoring tool.
 
 # Variables
 VERSION="1.6.1"  # Change this to the latest version if needed
@@ -37,28 +39,62 @@ INSTALL_DIR="/usr/local/bin"
 SERVICE_FILE="/etc/systemd/system/node_exporter.service"
 
 # Style guide.
-log_message "Downloading Prometheus Node Exporter..."
+log_message "Checking if Node Exporter is already installed..."
 
-# Download Node Exporter
-wget -q $DOWNLOAD_URL -O /tmp/node_exporter.tar.gz
+# Check if Node Exporter is already installed
+if command -v node_exporter &> /dev/null; then
+  # Style guide.
+  log_message "Node Exporter is already installed. Checking version..."
 
-# Style guide.
-log_message "Extracting files..."
+  # Get the current installed version
+  INSTALLED_VERSION=$(node_exporter --version 2>&1 | grep -oP 'v[0-9]+\.[0-9]+\.[0-9]+')
+  
+  if [ "$INSTALLED_VERSION" = "v$VERSION" ]; then
+    # Style guide.
+    log_message "Node Exporter version $INSTALLED_VERSION is already installed. Skipping installation."
+  else
+    # Style guide.
+    log_message "Different version detected. Upgrading to version $VERSION..."
 
-# Extract the binary
-tar -xzf /tmp/node_exporter.tar.gz -C /tmp
+    # Stop node expoter.
+    sudo systemctl stop node_exporter
 
-# Style guide.
-log_message "Installing Node Exporter..."
+    # Proceed to upgrade
+    INSTALL_NODE_EXPORTER=true
+  fi
+else
+  # Style guide.
+  log_message "Node Exporter is not installed. Proceeding with installation..."
 
-# Move the binary to /usr/local/bin
-sudo mv /tmp/node_exporter-$VERSION.linux-amd64/node_exporter $INSTALL_DIR
+  # Update flag.
+  INSTALL_NODE_EXPORTER=true
+fi
 
-# Style guide.
-log_message "Setting up systemd service..."
+# Download and install Node Exporter if needed
+if [ "$INSTALL_NODE_EXPORTER" = true ]; then
+  # Style guide.
+  log_message "Downloading Prometheus Node Exporter..."
 
-# Create a systemd service file
-sudo tee $SERVICE_FILE > /dev/null <<EOF
+  # Download Node Exporter
+  wget -q $DOWNLOAD_URL -O /tmp/node_exporter.tar.gz
+
+  # Style guide.
+  log_message "Extracting files..."
+
+  # Extract the binary
+  tar -xzf /tmp/node_exporter.tar.gz -C /tmp
+
+  # Style guide.
+  log_message "Installing Node Exporter..."
+
+  # Move the binary to /usr/local/bin
+  sudo mv /tmp/node_exporter-$VERSION.linux-amd64/node_exporter $INSTALL_DIR
+
+  # Style guide.
+  log_message "Setting up systemd service..."
+
+  # Create a systemd service file
+  sudo tee $SERVICE_FILE > /dev/null <<EOF
 [Unit]
 Description=Prometheus Node Exporter
 Wants=network-online.target
@@ -73,19 +109,20 @@ Restart=on-failure
 WantedBy=default.target
 EOF
 
+  # Style guide.
+  log_message "Starting Node Exporter service..."
+
+  # Reload systemd and restart the service
+  sudo systemctl daemon-reload
+  sudo systemctl enable node_exporter
+  sudo systemctl restart node_exporter
+
+  # Cleanup download
+  rm -rf /tmp/node_exporter.tar.gz /tmp/node_exporter-$VERSION.linux-amd64
+fi
+
 # Style guide.
-log_message "Starting Node Exporter service..."
-
-# Call systemctl.
-sudo systemctl daemon-reload
-sudo systemctl enable node_exporter
-sudo systemctl start node_exporter
-
-# Cleanup
-rm -rf /tmp/node_exporter.tar.gz /tmp/node_exporter-$VERSION.linux-amd64
+log_message "Node Exporter setup completed!"
 
 # Verify the service status
 sudo systemctl status node_exporter --no-pager
-
-# Style guide.
-log_message "Node Exporter installation complete!"
