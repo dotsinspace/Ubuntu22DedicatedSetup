@@ -8,6 +8,7 @@ set -e
 #
 USER_NAME="$1"
 PASSWORD="$2"
+ADD_USER="$3"
 
 #
 # LOG
@@ -44,17 +45,17 @@ apt-get update -y && apt-get upgrade
 # This section creates the new user, sets password, and adds the user to the sudo group.
 
 # Style guide.
-log_message "Creating user '$USER_NAME' with home directory..."
+log_message "Creating user '$ADD_USER' with home directory..."
 
 # Create user with home directory
-useradd -m -s /bin/bash "$USER_NAME"
+useradd -m -s /bin/bash "$ADD_USER"
 
 # Set the user's password
-echo "$USER_NAME:$PASSWORD" | chpasswd
+echo "$ADD_USER:$PASSWORD" | chpasswd
 
 # Add the user to the sudo group
-usermod -aG sudo "$USER_NAME"
+usermod -aG sudo "$ADD_USER"
 
 # Style guide.
-log_message "User '$USER_NAME' created and added to the sudo group."
+log_message "User '$ADD_USER' created and added to the sudo group."
 log_message "User created successfully."
