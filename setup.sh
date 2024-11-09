@@ -49,7 +49,7 @@ if command -v node_exporter &> /dev/null; then
   # Get installed version.
   INSTALLED_VERSION=$(node_exporter --version 2>&1 | grep -oP 'version [0-9]+\.[0-9]+\.[0-9]+')
   
-  if [ "$INSTALLED_VERSION" = "v$VERSION" ]; then
+  if [ "$INSTALLED_VERSION" = "version $VERSION" ]; then
     # Style guide.
     log_message "Node Exporter version $INSTALLED_VERSION is already installed. Skipping installation."
   else
