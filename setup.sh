@@ -47,7 +47,7 @@ if command -v node_exporter &> /dev/null; then
   log_message "Node Exporter is already installed. Checking version..."
 
   # Get installed version.
-  INSTALLED_VERSION=$(node_exporter --version 2>&1 | grep -oP 'verion [0-9]+\.[0-9]+\.[0-9]+')
+  INSTALLED_VERSION=$(node_exporter --version 2>&1 | grep -oP 'version [0-9]+\.[0-9]+\.[0-9]+')
   
   if [ "$INSTALLED_VERSION" = "v$VERSION" ]; then
     # Style guide.
