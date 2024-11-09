@@ -27,6 +27,8 @@ log_message() {
 log_message "Starting system update process..."
 log_message "Updating package lists..."
 
+echo "$PASSWORD" | sudo -S apt-get update -y > /dev/null
+
 # Update packages.
 if echo "$PASSWORD" | sudo -S apt-get update -y > /dev/null 2>&1; then
   # Style guide.
