@@ -8,7 +8,6 @@ set -e
 #
 USER_NAME="$1"
 PASSWORD="$2"
-LOG_FILE="/var/log/system_update.log"
 
 
 #
@@ -29,7 +28,7 @@ log_message "Starting system update process..."
 log_message "Updating package lists..."
 
 # Update packages.
-if echo $PASSWORD | sudo -S apt-get update >> "$LOG_FILE" 2>&1; then
+if echo $PASSWORD | sudo -S apt-get update 2>&1; then
   # Style guide.
   log_message "Package lists updated successfully."
 else
@@ -44,7 +43,7 @@ fi
 log_message "Upgrading packages..."
 
 # Upgrade packages.
-if sudo apt-get upgrade -y >> "$LOG_FILE" 2>&1; then
+if sudo apt-get upgrade -y 2>&1; then
   # Style guide.
   log_message "Packages upgraded successfully."
 else
