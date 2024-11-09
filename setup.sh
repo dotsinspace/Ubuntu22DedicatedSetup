@@ -15,8 +15,7 @@ LOG_FILE="/var/log/system_update.log"
 # LOG
 # Method for helper debbuging.
 log_message() {
-  echo "echo $PASSWORD | sudo -S" 
-  echo "$(date +'%Y-%m-%d %H:%M:%S') - $1" | sudo -S tee -a "$LOG_FILE"
+  echo "$(date +'%Y-%m-%d %H:%M:%S') - $1"
 }
 
 
