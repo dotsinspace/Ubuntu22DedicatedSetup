@@ -6,6 +6,8 @@ set -e
 #
 # GLOBALS
 #
+USER_NAME="$1"
+PASSWORD="$2"
 LOG_FILE="/var/log/system_update.log"
 
 
@@ -13,7 +15,8 @@ LOG_FILE="/var/log/system_update.log"
 # LOG
 # Method for helper debbuging.
 log_message() {
-  echo "$(date +'%Y-%m-%d %H:%M:%S') - $1" | tee -a "$LOG_FILE"
+  echo "echo $PASSWORD | sudo -S" 
+  echo "$(date +'%Y-%m-%d %H:%M:%S') - $1" | sudo -S tee -a "$LOG_FILE"
 }
 
 
@@ -111,11 +114,6 @@ fi
 #
 # USER SETUP
 # Following section contains all the setting to setup a dynamic user.
-
-
-# Variable assignment.
-USER_NAME="$1"
-PASSWORD="$2"
 
 # Style guide.
 log_message "Creating user '$USER_NAME'..."
