@@ -4,13 +4,6 @@
 set -e
 
 #
-# GLOBALS
-#
-USER_NAME="$1"
-PASSWORD="$2"
-ADD_USER="$3"
-
-#
 # LOG
 # Method for helper debugging.
 log_message() {
@@ -20,12 +13,6 @@ log_message() {
 # Check if the script is run as root
 if [ "$(id -u)" -ne 0 ]; then
   log_message "This script must be run as root!"
-  exit 1
-fi
-
-# Check if both username and password are provided as arguments
-if [ -z "$USER_NAME" ] || [ -z "$PASSWORD" ]; then
-  log_message "Usage: $0 <username> <password>"
   exit 1
 fi
 
