@@ -43,7 +43,7 @@ fi
 log_message "Upgrading packages..."
 
 # Upgrade packages.
-if sudo apt-get upgrade -y 2>&1; then
+if echo $PASSWORD | sudo apt-get upgrade -y 2>&1; then
   # Style guide.
   log_message "Packages upgraded successfully."
 else
@@ -58,7 +58,7 @@ fi
 log_message "Removing unused packages..."
 
 # Remove unref deps from ubuntu.
-if sudo apt-get autoremove -y >> "$LOG_FILE" 2>&1; then
+if echo $PASSWORD | sudo apt-get autoremove -y 2>&1; then
   # Style guide.
   log_message "Unused packages removed successfully."
 else
@@ -70,7 +70,7 @@ fi
 log_message "Cleaning up package cache..."
 
 # Auto clean packages.
-if sudo apt-get autoclean -y >> "$LOG_FILE" 2>&1; then
+if echo $PASSWORD | sudo apt-get autoclean -y 2>&1; then
   # Style guide.
   log_message "Package cache cleaned successfully."
 else
